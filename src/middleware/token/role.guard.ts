@@ -39,7 +39,7 @@ export class RolesGuard implements CanActivate {
     if (!user || !roles.includes(user.role.role)) {
       throw new ForbiddenException('Unauthorized Access');
     }
-
+    request.user = user;
     return true;
   }
 }

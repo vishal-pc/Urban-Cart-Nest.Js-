@@ -6,7 +6,7 @@ import {
   Res,
   Post,
   Get,
-  Param,
+  // Param,
 } from '@nestjs/common';
 import { Request, Response } from 'express';
 import * as bcrypt from 'bcrypt';
@@ -144,15 +144,12 @@ export class UserController {
     }
   }
 
-  @Get('getUser/:id')
+  @Get('getUser')
   @UseGuards(AuthGuard('logintoken'), RolesGuard)
-  @Roles('user')
-  async getUserProfile(
-    @Req() req: Request,
-    @Res() res: Response,
-    @Param('id') id: string,
-  ) {
+  @Roles('user', 'admin')
+  async getUserProfile(@Req() req: Request, @Res() res: Response) {
     try {
+      const id = req.user;
       const user = await this.userService.findUserById(id);
       if (!user) {
         return res.status(StatusCodes.ClientError.NotFound).json({
@@ -167,6 +164,7 @@ export class UserController {
         profileImg: user.profileImg || 'No Image',
         address: user.address || 'No Address',
         userLogin: user.userLogin || false,
+        IsAdmin: user.IsAdmin || false,
         role: user.role,
         createdAt: user.createdAt,
         updatedAt: user.updatedAt,
